@@ -1,14 +1,59 @@
-# balena-node-red
+# Node-RED and MQTT mosquitto running on balena
 
-A Node-RED application with [balena-supervisor](https://balena.io/docs/reference/supervisor/supervisor-api/) flow [support](https://github.com/balena-io-projects/node-red-contrib-balena), can be managed remotely via balena [publicURL](https://balena.io/docs/learn/manage/actions/#enable-public-device-url)
+This is a project based on the [balena Node-RED block](https://github.com/balenablocks/balena-node-red) which supports the Node-RED [balena flow](https://github.com/balena-io-projects/node-red-contrib-balena). It can be managed remotely via balena [publicURL](https://balena.io/docs/learn/manage/actions/#enable-public-device-url).
+
+## Requirements
+
+### Hardware
+
+* Raspberry Pi 0/2/3/4 or [balenaFin](https://www.balena.io/fin/)
+* SD card in case of the RPi 3/4
+* Power supply and (optionally) ethernet cable
+
+### Software
+
+* A balenaCloud account ([sign up here](https://dashboard.balena-cloud.com/))
+* [balenaEtcher](https://balena.io/etcher)
+
+
+## Deploy
+
+You have two options here:
+
+### One-click deploy via [Balena Deploy](https://www.balena.io/docs/learn/deploy/deploy-with-balena-button/)
 
 You can deploy this project to a new balenaCloud application in one click using the button below:
 
-[![](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balenalabs/balena-node-red)
+[![](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/mpous/balena-nodered-mqtt)
 
 Or, you can create an application in your balenaCloud dashboard and balena push this code to it the traditional way.
 
-## Configure via [environment variables](https://balena.io/docs/learn/manage/serv-vars/)
+### In-control deploy via [balena CLI](https://www.balena.io/docs/reference/balena-cli/)
+
+If you are a balena CLI expert, feel free to use balena CLI. This option lets you configure in detail some options, like adding new services to your deploy or configure de DNS Server to use.
+
+- Sign up on [balena.io](https://dashboard.balena.io/signup)
+- Create a new application on balenaCloud.
+- Add a new device and download the image of the BalenaOS it creates.
+- Burn and SD card (if using a Pi), connect it to the device and boot it up.
+
+While the device boots (it will eventually show up in the Balena dashboard) we will prepare de services:
+
+```
+cd ~/workspace
+git clone https://github.com/mpous/balena-nodered-mqtt
+cd balena-nodered-mqtt
+```
+
+- Using [Balena CLI](https://www.balena.io/docs/reference/cli/), push the code with `balena push <application-name>`
+- See the magic happening, your device is getting updated 🌟Over-The-Air🌟!
+
+
+
+## Variables
+
+### Device Variables
+
 Variable Name | Default | Description
 ------------ | ------------- | -------------
 PORT | `80` | the port that exposes the Node-RED UI
@@ -17,15 +62,30 @@ PASSWORD | `balena` | the Node-RED admin password
 ENCRIPTION_KEY | `balena` | the encription key used to store your credentials files
 
 You **must** set the `USERNAME` and `PASSWORD` environment variables to be able to save or run programs in Node-RED.  
-More information about using and setting environment variables can be found in
-the [balena docs](https://balena.io/docs/learn/manage/serv-vars/).
 
-## License
 
-Copyright 2016 balena Ltd.
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+## Node-RED
 
-<http://www.apache.org/licenses/LICENSE-2.0>
+For running Node-RED, use the local IP address on port 80, if you are on the same network than your device. You also can use the `Publick Device URL` by balena to access to the Node-RED UI.
 
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+### Add new Node-RED nodes
+
+Add new Node-RED nodes on the Dockerfile templates on the `node-red` folder in the project. Find more an example [here](https://github.com/mpous/balena-nodered-mqtt/blob/3c2e5eac92d7be3b643ca4fe6d29d0aefd533832/node-red/Dockerfile.raspberrypi4-64#L11).
+
+### Add new services
+
+For adding new services, use the `docker-compose` [here](https://github.com/mpous/balena-nodered-mqtt/blob/master/docker-compose.yml). Go to [balenaHub](https://hub.balena.io) and use the blocks available there to accelerate your development.
+
+### Deploy your flow into your entire fleet
+
+If you would like to deploy your flow into your entire fleet, you can introduce a file into the folder `node-red/app/flows` [here](https://github.com/mpous/balena-nodered-mqtt/tree/master/node-red/app/flows).
+
+Go to the Node-RED UI and `Import` the flow and start using it.
+
+
+
+## Attribution
+
+- This is based on the [balena Node-RED block](https://github.com/balenablocks/balena-node-red) made by Carlo Curinga and others.
+- This is in joint effort between Carlo Curinga and Marc Pous to present in the [Node-RED Con 2021](https://nodered.jp/noderedcon2021/index-en.html).

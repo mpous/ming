@@ -15,6 +15,7 @@ services:
     network_mode: host
     labels:
       io.balena.features.supervisor-api: '1'
+      io.balena.features.balena-api: '1' 
     environment:
       - "USERNAME=balena"
       - "PASSWORD=balena"
@@ -34,27 +35,3 @@ services:
     ports:
       - "1883:1883"
     restart: always
-
-  connector:
-    image: balenablocks/connector:raspberrypi3
-    restart: always
-    network_mode: host
-    labels:
-      io.balena.features.balena-api: '1' 
-      io.balena.features.supervisor-api: '1'
-    privileged: true 
-  
-  dashboard:
-    image: balenablocks/dashboard
-    restart: always
-    volumes:
-      - "dashboard-data:/data"
-    ports:
-      - "8080"
-
-  influxdb:
-    image: influxdb@sha256:b4529fd53e9022bd1e83aaf04c6c6a1ebfffdfa112c31367d69da1354983a24b
-    container_name: influxdb
-    restart: always
-    volumes:
-      - 'database:/var/lib/influxdb'

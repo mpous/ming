@@ -9,6 +9,7 @@ COPY ./app/package-lock.json package-lock.json
 
 RUN JOBS=MAX npm install -g --production --unsafe-perm \
       node-red \
+      node-red-node-random \
       node-red-contrib-balena \
     && JOBS=MAX npm install --unsafe-perm --production && npm cache clean --force
 

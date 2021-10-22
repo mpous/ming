@@ -1,14 +1,22 @@
-name: balena-node-red
+name: balena Node-RED MQTT
 type: sw.application
 description: >-
-  Build a Node-RED application with balena-supervisor flow support that can be
-  managed remotely via balena publicURL.
+  Build a Node-RED application with MQTT mosquitto along with the balena flow. Manage the Node-RED UI remotely via balena Public Device URL.
 joinable: false
+post-provisioning: >-
+  ## Usage instructions
+
+  For running Node-RED, use the local IP address on port 80, if you are on the same network than your device. You also can use the `Publick Device URL` by balena to access to the Node-RED UI.
+
+  Use `balena` as Username and Password to access to the Node-RED UI. You can change this variables on the `Device Variables`.
+
+  Find more instructions on the [Github repository](https://github.com/mpous/balena-nodered-mqtt).
+
 assets:
   repository:
     type: blob.asset
     data:
-      url: 'https://github.com/balenalabs/balena-node-red'
+      url: 'https://github.com/mpous/balena-nodered-mqtt'
   logo:
     type: blob.asset
     data:
@@ -28,4 +36,4 @@ data:
     - raspberrypi3-64
     - raspberrypi4-64
     - fincm3
-version: 2.3.1
+

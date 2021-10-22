@@ -49,7 +49,6 @@ cd balena-nodered-mqtt
 - See the magic happening, your device is getting updated 🌟Over-The-Air🌟!
 
 
-
 ## Variables
 
 ### Device Variables
@@ -79,7 +78,7 @@ For adding new services, use the `docker-compose` [here](https://github.com/mpou
 
 ### Deploy your flow into your entire fleet
 
-If you would like to deploy your flow into your entire fleet, you can introduce a file into the folder `node-red/app/flows` [here](https://github.com/mpous/balena-nodered-mqtt/tree/master/node-red/app/flows).
+If you would like to deploy your flow into your entire fleet, you can introduce a file into the folder `node-red/app/flows` [here](https://github.com/mpous/balena-nodered-mqtt/tree/master/node-red/app/flows) on your cloned github repository. Then using the `balena CLI` call `balena push <your Fleet name>` and you will find the flow deployed on all your fleet.
 
 Go to the Node-RED UI and `Import` the flow and start using it.
 
@@ -87,5 +86,5 @@ Go to the Node-RED UI and `Import` the flow and start using it.
 
 ## Attribution
 
-- This is based on the [balena Node-RED block](https://github.com/balenablocks/balena-node-red) made by Carlo Curinga and others.
+- This is based on the [balena Node-RED block](https://github.com/balenablocks/balena-node-red) made by Carlo Curinga and others. And also inspired by the [Razikus Node-RED](https://github.com/Razikus/balena-nodered) project.
 - This is in joint effort between Carlo Curinga and Marc Pous to present in the [Node-RED Con 2021](https://nodered.jp/noderedcon2021/index-en.html).

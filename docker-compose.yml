@@ -2,7 +2,7 @@ version: '2'
 
 volumes:
     resin-data:
-    dashboard-data:
+    dashboard:
     database:
 
 services:
@@ -28,6 +28,29 @@ services:
       - "/dev/i2c-1:/dev/i2c-1"
     ports:
       - 80:80
+
+  connector:
+    image: bhcr.io/balenablocks/connector-aarch64 # where <arch> is one of aarch64, armv7hf or amd64
+    restart: always
+    labels:
+      io.balena.features.balena-api: '1' # necessary to discover services
+      io.balena.features.supervisor-api: 1  # necessary to discover services in local mode
+    privileged: true # necessary to change container hostname
+  
+  influxdb:
+    image: influxdb@sha256:b4529fd53e9022bd1e83aaf04c6c6a1ebfffdfa112c31367d69da1354983a24b
+    container_name: influxdb
+    restart: always
+    volumes:
+      - 'database:/var/lib/influxdb'
+  
+  dashboard:
+    image: bh.cr/balenablocks/dashboard
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - 'dashboard:/data'
 
   mqtt:
     image: arm32v6/eclipse-mosquitto

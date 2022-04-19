@@ -10,8 +10,8 @@ COPY ./app/package-lock.json package-lock.json
 RUN JOBS=MAX npm install -g --production --unsafe-perm \
       node-red \
       node-red-node-random \
-      node-red-contrib-balena \
       node-gyp \
+      node-red-contrib-balena \
     && JOBS=MAX npm install --unsafe-perm --production && npm cache clean --force
 
 ###
@@ -20,9 +20,8 @@ RUN JOBS=MAX npm install -g --production --unsafe-perm \
 FROM balenalib/raspberrypi3-debian-python:latest-stretch-run
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
+  make \
   rpi.gpio \
-  python3 \
-  python3-pip \
   python-dev \
   python-rpi.gpio \
   libatomic1 \

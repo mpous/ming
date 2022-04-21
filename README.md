@@ -1,4 +1,4 @@
-# Node-RED and MQTT mosquitto running on balena
+# Industrial IoT Gateway with Node-RED and MQTT broker running on balena
 
 This is a project based on the [balena Node-RED block](https://github.com/balenablocks/balena-node-red) which supports the Node-RED [balena flow](https://github.com/balena-io-projects/node-red-contrib-balena). It can be managed remotely via balena [publicURL](https://balena.io/docs/learn/manage/actions/#enable-public-device-url).
 
@@ -6,8 +6,8 @@ This is a project based on the [balena Node-RED block](https://github.com/balena
 
 ### Hardware
 
-* Raspberry Pi 0/2/3/4 or [balenaFin](https://www.balena.io/fin/)
-* SD card in case of the RPi 3/4
+* Intel Nuc (`amd64`) and Generic x86 devices (still WIP for Raspberry Pi and similar)
+* USB drive
 * Power supply and (optionally) ethernet cable
 
 ### Software
@@ -24,7 +24,7 @@ You have two options here:
 
 You can deploy this project to a new balenaCloud application in one click using the button below:
 
-[![](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/mpous/balena-nodered-mqtt)
+[![](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/mpous/nodeRED-iiot-gateway)
 
 Or, you can create an application in your balenaCloud dashboard and balena push this code to it the traditional way.
 
@@ -33,19 +33,19 @@ Or, you can create an application in your balenaCloud dashboard and balena push 
 If you are a balena CLI expert, feel free to use balena CLI. This option lets you configure in detail some options, like adding new services to your deploy or configure de DNS Server to use.
 
 - Sign up on [balena.io](https://dashboard.balena.io/signup)
-- Create a new application on balenaCloud.
+- Create a new fleet on balenaCloud.
 - Add a new device and download the image of the BalenaOS it creates.
-- Burn and SD card (if using a Pi), connect it to the device and boot it up.
+- Burn the USB drive, connect it to the x86 device and boot it up (you might go to the BIOS to make the device to boot from the USB on the first time. Please read more here).
 
 While the device boots (it will eventually show up in the Balena dashboard) we will prepare de services:
 
 ```
 cd ~/workspace
-git clone https://github.com/mpous/balena-nodered-mqtt
-cd balena-nodered-mqtt
+git clone https://github.com/mpous/nodeRED-iiot-gateway
+cd nodeRED-iiot-gateway
 ```
 
-- Using [Balena CLI](https://www.balena.io/docs/reference/cli/), push the code with `balena push <application-name>`
+- Using [Balena CLI](https://www.balena.io/docs/reference/cli/), push the code with `balena push <fleet-name>`
 - See the magic happening, your device is getting updated 🌟Over-The-Air🌟!
 
 
@@ -67,24 +67,27 @@ You **must** set the `USERNAME` and `PASSWORD` environment variables to be able 
 ## Node-RED
 
 For running Node-RED, use the local IP address on port 80, if you are on the same network than your device. You also can use the `Publick Device URL` by balena to access to the Node-RED UI.
+Introduce the `USERNAME` and `PASSWORD` specified as a Variable on balenaCloud. The default are `balena`.
 
-### Add new Node-RED nodes
+### Add Node-RED nodes needed
 
-Add new Node-RED nodes on the Dockerfile templates on the `node-red` folder in the project. Find more an example [here](https://github.com/mpous/balena-nodered-mqtt/blob/3c2e5eac92d7be3b643ca4fe6d29d0aefd533832/node-red/Dockerfile.raspberrypi4-64#L11).
+Add the `node-red-contrib-modbus` nodes on your Node-RED. Open the top-right menu, click `Manage palette`. Go to the `Install` tab and search *node-red-contrib-modbus*. Click Install.
+Also add the `influxdb` nodes following the same process. Search *node-red-contrib-influxdb*  and install it.
 
-### Add new services
+New blocks of nodes should appear on your left menu now called `Storage` and `Modbus`.
 
-For adding new services, use the `docker-compose` [here](https://github.com/mpous/balena-nodered-mqtt/blob/master/docker-compose.yml). Go to [balenaHub](https://hub.balena.io) and use the blocks available there to accelerate your development.
+### Use the MQTT broker
 
-### Deploy your flow into your entire fleet
+The MQTT broker is located on your localhost port 1883 or on the `mqtt` service running on the device.
 
-If you would like to deploy your flow into your entire fleet, you can introduce a file into the folder `node-red/app/flows` [here](https://github.com/mpous/balena-nodered-mqtt/tree/master/node-red/app/flows) on your cloned github repository. Then using the `balena CLI` call `balena push <your Fleet name>` and you will find the flow deployed on all your fleet.
+### Start building your flows
 
-Go to the Node-RED UI and `Import` the flow and start using it.
-
+Now you can start building your flows and deploy them to your gateway. You can find an example of the flows we built for a workshop [here](https://github.com/oriolrius/miot-nodered-demo).
 
 
 ## Attribution
 
+- This is a result of a workshop made by [Oriol Rius](https://github.com/oriolrius) and [Marc Pous](https://github.com/mpous).
 - This is based on the [balena Node-RED block](https://github.com/balenablocks/balena-node-red) made by Carlo Curinga and others. And also inspired by the [Razikus Node-RED](https://github.com/Razikus/balena-nodered) project.
 - This is in joint effort between Carlo Curinga and Marc Pous to present in the [Node-RED Con 2021](https://nodered.jp/noderedcon2021/index-en.html).
+

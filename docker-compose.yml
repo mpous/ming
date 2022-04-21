@@ -1,62 +1,53 @@
-version: '2'
-
+version: '2.1'
 volumes:
-    resin-data:
-    dashboard:
-    influx-data:
-
+  resin-data: {}
+  dashboard: {}
+  influx-data: {}
 services:
   node-red:
-    build: ./node-red
+    build:
+      context: ./node-red
     volumes:
       - 'resin-data:/data'
     restart: always
     privileged: true
     network_mode: host
+    ports:
+      - '1880:1880'
     labels:
       io.balena.features.supervisor-api: '1'
-      io.balena.features.balena-api: '1' 
+      io.balena.features.balena-api: '1'
     environment:
-      - "USERNAME=balena"
-      - "PASSWORD=balena"
-      - "ENCRIPTION_KEY=balena"
-    cap_add:
-      - SYS_RAWIO
+      USERNAME: balena
+      PASSWORD: balena
+      ENCRIPTION_KEY: balena
     devices:
-      - "/dev/mem:/dev/mem"
-      - "/dev/gpiomem:/dev/gpiomem"
-      - "/dev/i2c-1:/dev/i2c-1"
-    ports:
-      - 80:80
- 
+      - '/dev/mem:/dev/mem'
+  
   influxdb:
-    image: influxdb:1.8.0
+    image: 'influxdb:1.8.0'
     container_name: influxdb
     restart: always
-    expose:
-      - 8086
     environment:
       INFLUXDB_DB: balena
       INFLUXDB_USER: iiot
-      INFLUXDB_ADMIN_ENABLED: true
+      INFLUXDB_ADMIN_ENABLED: 'true'
       INFLUXDB_ADMIN_USER: admin
       INFLUXDB_ADMIN_PASSWORD: admin
       INFLUXDB_DATA_DIR: /data
     volumes:
-      - influx-data:/data
+      - 'influx-data:/data'
+    network_mode: host
   
-  dashboard:
-    image: balenablocks/dashboard
-    restart: always
+  grafana:
+    image: grafana/grafana
+    restart: unless-stopped
     ports:
-      - "8080:8080"
+      - '3000:3000'
     volumes:
       - 'dashboard:/data'
-
+ 
   mqtt:
-    #image: arm32v6/eclipse-mosquitto
     image: eclipse-mosquitto
+    restart: unless-stopped
     network_mode: host
-    ports:
-      - "1883:1883"
-    restart: always

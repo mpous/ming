@@ -1,39 +1,39 @@
 name: balena Node-RED MQTT
 type: sw.application
 description: >-
-  Build a Node-RED application with MQTT mosquitto along with the balena flow. Manage the Node-RED UI remotely via balena Public Device URL.
+  Industrial IoT gateway compatible with Modbus to convert legacy to digital.
 joinable: false
 post-provisioning: >-
   ## Usage instructions
 
-  For running Node-RED, use the local IP address on port 80, if you are on the same network than your device. You also can use the `Publick Device URL` by balena to access to the Node-RED UI.
+  Run this Industrial IoT Gateway gateway compatible with `amd64` and `x86` using NodeRED, MQTT, InfluxDB and Grafan to convert legacy to digital in the edge.
+  
+  To access NodeRED use the local IP address on port 80, if you are on the same network of your device. You also can use the `Publick Device URL` by balena to access to the Node-RED UI.
 
   Use `balena` as Username and Password to access to the Node-RED UI. You can change this variables on the `Device Variables`.
 
-  Find more instructions on the [Github repository](https://github.com/mpous/balena-nodered-mqtt).
+  To access Grafana use the local IP address on port 3000.
+
+  Find more instructions on the [Github repository](https://github.com/mpous/nodeRED-iiot-gateway) and feel free to contribute.
 
 assets:
   repository:
     type: blob.asset
     data:
-      url: 'https://github.com/mpous/balena-nodered-mqtt'
+      url: 'https://github.com/mpous/nodeRED-iiot-gateway'
   logo:
     type: blob.asset
     data:
       url: >-
-        https://raw.githubusercontent.com/balenablocks/balena-node-red/master/logo.png
+        https://github.com/mpous/nodeRED-iiot-gateway/master/logo.png
 data:
   applicationEnvironmentVariables:
     - PORT: 80
     - USERNAME: balena
     - PASSWORD: balena
     - ENCRIPTION_KEY: balena
-  defaultDeviceType: raspberry4-64
+  defaultDeviceType: genericx86-64-ext
   supportedDeviceTypes:
-    - raspberry-pi
-    - raspberry-pi2
-    - raspberrypi3
-    - raspberrypi3-64
-    - raspberrypi4-64
-    - fincm3
+    - genericx86-64-ext
+    - intel-nuc
 

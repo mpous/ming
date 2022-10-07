@@ -1,0 +1,24 @@
+name: MING - MQTT InfluxDB NodeRED Grafana
+type: sw.application
+description: >-
+  Deploys MING Stak (MQTT, InfluxDB, NodeRED and Grafana). An Open-Source LAMP-like stack for the Internet of Things
+joinable: false
+assets:
+  repository:
+    type: blob.asset
+    data:
+      url: 'https://github.com/mpous/ming'
+  logo:
+    type: blob.asset
+    data:
+      url: >-
+        https://raw.githubusercontent.com/mpous/ming/master/logo.png
+data:
+  defaultDeviceType: raspberrypi4-64
+  supportedDeviceTypes:
+    - raspberrypi3
+    - raspberrypi3-64
+    - raspberrypi4-64
+    - raspberrypi400-64
+    - raspberrypicm4-ioboard
+    - fincm3

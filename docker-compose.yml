@@ -1,0 +1,86 @@
+version: '2'
+
+volumes:
+  node-red-data:
+  grafana-data:
+  influxdb-data:
+  influxdb-etc:
+
+services:
+
+  # ------------------------------------------------------------------------------------
+  # BalenaLabs WiFi-Connect
+  # ------------------------------------------------------------------------------------
+  wifi-connect:
+    image: balenablocks/wifi-connect:rpi
+    container_name: wifi-connect
+    network_mode: "host"
+    labels:
+        io.balena.features.dbus: '1'
+        io.balena.features.firmware: '1'
+    cap_add:
+        - NET_ADMIN
+    environment:
+        DBUS_SYSTEM_BUS_ADDRESS: "unix:path=/host/run/dbus/system_bus_socket"
+
+  # ------------------------------------------------------------------------------------
+  # Node-RED
+  # ------------------------------------------------------------------------------------
+  node-red:
+    image: bh.cr/balenablocks/balena-node-red
+    container_name: node-red
+    privileged: true
+    restart: unless-stopped
+    volumes:
+        - 'node-red-data:/data'
+    labels:
+        io.balena.features.dbus: '1'
+        io.balena.features.sysfs: '1'
+        io.balena.features.supervisor-api: '1'
+        io.balena.features.balena-api: '1'
+    ports:
+        - 80:80
+    environment:
+        PORT: 80
+        USERNAME: "balena"
+        PASSWORD: "balena"
+        ENCRIPTION_KEY: "balena"        
+    cap_add:
+        - SYS_RAWIO
+    devices:
+        - "/dev/mem:/dev/mem"
+        - "/dev/gpiomem:/dev/gpiomem"
+        - "/dev/i2c-1:/dev/i2c-1"
+
+  # ------------------------------------------------------------------------------------
+  # Influxdb
+  # ------------------------------------------------------------------------------------
+  influxdb:
+    image: influxdb:1.7.11
+    container_name: influxdb
+    restart: unless-stopped
+    volumes:
+        - influxdb-data:/var/lib/influxdb
+        - influxdb-etc:/etc/influxdb
+
+  # ------------------------------------------------------------------------------------
+  # Grafana
+  # ------------------------------------------------------------------------------------
+  grafana:
+    image: balenablocks/dashboard
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+        - "8080:80"
+    volumes:
+        - "grafana-data:/data"
+
+  # ------------------------------------------------------------------------------------
+  # MQTT
+  # ------------------------------------------------------------------------------------
+  mqtt:
+    image: eclipse-mosquitto
+    network_mode: host
+    ports:
+      - "1883:1883"
+    restart: always

@@ -14,7 +14,7 @@ services:
   wifi-connect:
     image: balenablocks/wifi-connect:rpi
     container_name: wifi-connect
-    network_mode: "host"
+    network_mode: host
     labels:
         io.balena.features.dbus: '1'
         io.balena.features.firmware: '1'
@@ -27,7 +27,7 @@ services:
   # Node-RED
   # ------------------------------------------------------------------------------------
   node-red:
-    image: bh.cr/balenablocks/balena-node-red
+    image: bh.cr/balenalabs/balena-node-red-aarch64
     container_name: node-red
     privileged: true
     restart: unless-stopped
@@ -51,6 +51,17 @@ services:
         - "/dev/mem:/dev/mem"
         - "/dev/gpiomem:/dev/gpiomem"
         - "/dev/i2c-1:/dev/i2c-1"
+  
+
+  # ------------------------------------------------------------------------------------
+  # MQTT
+  # ------------------------------------------------------------------------------------
+  mqtt:
+    image: eclipse-mosquitto:1.6.15
+    container_name: mqtt
+    ports:
+      - "1883:1883"
+    restart: always
 
   # ------------------------------------------------------------------------------------
   # Influxdb
@@ -75,12 +86,4 @@ services:
     volumes:
         - "grafana-data:/data"
 
-  # ------------------------------------------------------------------------------------
-  # MQTT
-  # ------------------------------------------------------------------------------------
-  mqtt:
-    image: eclipse-mosquitto
-    network_mode: host
-    ports:
-      - "1883:1883"
-    restart: always
+

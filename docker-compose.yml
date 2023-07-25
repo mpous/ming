@@ -12,7 +12,7 @@ services:
   # BalenaLabs WiFi-Connect
   # ------------------------------------------------------------------------------------
   wifi-connect:
-    image: balenablocks/wifi-connect:rpi
+    image: bh.cr/balenalabs/wifi-connect-rpi
     container_name: wifi-connect
     network_mode: host
     labels:
@@ -78,7 +78,7 @@ services:
   # Grafana
   # ------------------------------------------------------------------------------------
   grafana:
-    image: balenablocks/dashboard
+    image: bh.cr/balenalabs/dashboard
     container_name: grafana
     restart: unless-stopped
     ports:

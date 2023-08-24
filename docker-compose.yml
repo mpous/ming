@@ -27,31 +27,45 @@ services:
   # Node-RED
   # ------------------------------------------------------------------------------------
   node-red:
-    image: bh.cr/balenalabs/balena-node-red-aarch64
+#    image: bh.cr/balenalabs/balena-node-red-aarch64
+    image: bh.cr/gh_ajlennon/balena-node-red
     container_name: node-red
     privileged: true
     restart: unless-stopped
     volumes:
         - 'node-red-data:/data'
     labels:
-        io.balena.features.dbus: '1'
-        io.balena.features.sysfs: '1'
-        io.balena.features.supervisor-api: '1'
-        io.balena.features.balena-api: '1'
-    ports:
-        - 80:80
+        # Enable traefik support for this container
+        - "traefik.enable=true"
+        # Set service port
+        - "traefik.http.services.node-red.loadbalancer.server.port=80"
+        # Make it available on the "web" entrypoint which is defined below as :80
+        - "traefik.http.routers.node-red.entrypoints=web"
+        # Add a specific path prefix that will be expected on the URL suffix
+        - "traefik.http.routers.node-red.rule=PathPrefix(`/node-red`)"
+        - "traefik.http.middlewares.strip-node-red-prefix.stripprefix.forceSlash=false"
+        - "traefik.http.routers.node-red.middlewares=strip-node-red-prefix"
+        - "io.balena.features.dbus=true"
+        - "io.balena.features.sysfs=true"
+        - "io.balena.features.supervisor-api=true"
+        - "io.balena.features.balena-api=true"
     environment:
         PORT: 80
+        HTTP_ROOT: "node-red"
         USERNAME: "balena"
         PASSWORD: "balena"
-        ENCRIPTION_KEY: "balena"        
+        ENCRIPTION_KEY: "balena"
     cap_add:
         - SYS_RAWIO
     devices:
         - "/dev/mem:/dev/mem"
         - "/dev/gpiomem:/dev/gpiomem"
         - "/dev/i2c-1:/dev/i2c-1"
-  
+    depends_on:
+      influxdb:
+        condition: service_started
+      reverse-proxy:
+        condition: service_started
 
   # ------------------------------------------------------------------------------------
   # MQTT
@@ -81,9 +95,54 @@ services:
     image: bh.cr/balenalabs/dashboard
     container_name: grafana
     restart: unless-stopped
-    ports:
-        - "8080:80"
     volumes:
-        - "grafana-data:/data"
+      - "grafana-data:/data"
+    environment:
+      - "PORT=80"
+      - "GF_SERVER_ROOT_URL=/grafana"
+      - "GF_SERVER_SERVE_FROM_SUB_PATH=true"
+    labels:
+      # Enable traefik support for this container
+      - "traefik.enable=true"
+      # Set service port
+      - "traefik.http.services.grafana.loadbalancer.server.port=80"
+      # Make it available on the "web" entrypoint which is defined below as :80
+      - "traefik.http.routers.grafana.entrypoints=web"
+      # Add a specific path prefix that will be expected on the URL suffix
+      - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana`)"
+      # Redirect a request to root page to grafana service
+      - "traefik.http.routers.grafana-main.rule=( Path(`/`) )"
+      - "traefik.http.middlewares.redirect-root.redirectregex.regex=^/"
+      - "traefik.http.middlewares.redirect-root.redirectregex.replacement=/grafana"
+      - "traefik.http.routers.grafana-main.middlewares=redirect-root"
+    depends_on:
+      influxdb:
+        condition: service_started
+      reverse-proxy:
+        condition: service_started
 
-
+  # ------------------------------------------------------------------------------------
+  # Traefik Reverse Proxy
+  # ------------------------------------------------------------------------------------
+  reverse-proxy:
+    image: bh.cr/gh_ajlennon/reverse-proxy
+    command:
+        - "--log.level=DEBUG"
+        - "--accesslog=true"
+        - "--accesslog.filepath=/var/log/traefik.log"
+        - "--api.dashboard=true"
+        # Uncomment this to enable the Traefik WebUI on port :8080
+        - "--api.insecure"
+        - "--providers.docker=true"
+        - "--providers.docker.endpoint=unix:///var/run/balena-engine.sock"
+        #- "--providers.docker.exposedbydefault=true"
+        - "--entrypoints.web.address=:80"
+    ports:
+        # The HTTP port
+        - "80:80"
+        # The Dashboard port
+        - "8080:8080"
+    labels:
+        # So that Traefik can listen to the Docker events
+        io.balena.features.balena-socket: '1'
+    restart: always

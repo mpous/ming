@@ -1,7 +1,7 @@
 name: MING - MQTT InfluxDB NodeRED Grafana
 type: sw.application
 description: >-
-  Deploys MING Stak (MQTT, InfluxDB, NodeRED and Grafana). An Open-Source LAMP-like stack for the Internet of Things
+  Deploys MING Stack (MQtt, InfluxDB, NodeRED and Grafana). An Open-Source LAMP-like stack for the Internet of Things
 joinable: false
 assets:
   repository:

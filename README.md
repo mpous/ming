@@ -4,10 +4,13 @@ This is an educative project called *MING* based on MQTT, InfluxDB, [balena Node
 
 Each of these applications is built and runs in its own container on an embedded Linux target supporting balena.io or Docker:
 
-* Mosquitto MQTT broker listening on port 1883 for MQtt message publications.
-* InfluxDB listening on port 8086 providing a time series database for sensor data storage.
-* NodeRed listening on port 80 to provide an easy to use graphical environment for parsing, analysing, storing, and forwarding sensor data messages.
-* Grafana listening on port 8080 providing a data visualisation environment for sensor data.
+* Traefik reverse proxy allows remote access via a mapped HTTP path rather than needing to expose container ports publically
+* Traefik configured in debug mode to expose its admin WebUI on port :8080
+* Traefik configured to listen on port :80 forwarding configured paths to internal ports in containers
+* Mosquitto MQTT broker listening on local port 1883 for MQtt message publications.
+* InfluxDB listening on local port 8086 providing a time series database for sensor data storage.
+* NodeRed listening on http://foo/node-red to provide an easy to use graphical environment for parsing, analysing, storing, and forwarding sensor data messages.
+* Grafana listening on http://foo/grafana providing a data visualisation environment for sensor data.
 * WiFi Connect listening on the port 80 in case there is not WiFi connectivity available.
 
 
@@ -67,14 +70,14 @@ Variable Name | Default | Description
 PORT | `80` | the port that exposes the Node-RED UI
 USERNAME | `balena` | the Node-RED admin username
 PASSWORD | `balena` | the Node-RED admin password
-ENCRIPTION_KEY | `balena` | the encription key used to store your credentials files
+ENCRYPTION_KEY | `balena` | the encription key used to store your credentials files
 
-You **must** set the `USERNAME` and `PASSWORD` environment variables to be able to save or run programs in Node-RED.  
+You **must** set the `USERNAME` and `PASSWORD` environment variables to be able to save or run programs in Node-RED.
 
 
 ## Node-RED
 
-For running Node-RED, use the local IP address on port 80, if you are on the same network than your device. You also can use the `Publick Device URL` by balena to access to the Node-RED UI.
+For running Node-RED, use the local IP address on port 80 with path /node-red, if you are on the same network than your device. You also can use the `Public Device URL` by balena to access to the Node-RED UI.
 
 ### Add new Node-RED nodes
 

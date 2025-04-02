@@ -8,11 +8,13 @@ volumes:
 
 services:
 
+services:
+
   # ------------------------------------------------------------------------------------
   # BalenaLabs WiFi-Connect
   # ------------------------------------------------------------------------------------
   #wifi-connect:
-  #  image: bh.cr/balenalabs/wifi-connect-rpi
+  #  image: balenablocks/wifi-connect:rpi
   #  container_name: wifi-connect
   #  network_mode: host
   #  labels:
@@ -30,6 +32,7 @@ services:
     image: bh.cr/balenalabs/balena-node-red-aarch64
     container_name: node-red
     privileged: true
+    #network_mode: host
     restart: unless-stopped
     volumes:
         - 'node-red-data:/data'
@@ -44,14 +47,14 @@ services:
         PORT: 80
         USERNAME: "balena"
         PASSWORD: "balena"
-        ENCRIPTION_KEY: "balena"        
+        ENCRIPTION_KEY: "balena"
     cap_add:
         - SYS_RAWIO
     devices:
         - "/dev/mem:/dev/mem"
         - "/dev/gpiomem:/dev/gpiomem"
         - "/dev/i2c-1:/dev/i2c-1"
-  
+
 
   # ------------------------------------------------------------------------------------
   # MQTT
@@ -78,12 +81,12 @@ services:
   # Grafana
   # ------------------------------------------------------------------------------------
   grafana:
-    image: bh.cr/balenalabs/dashboard
+    #image: balenablocks/dashboard
+    image: grafana/grafana
     container_name: grafana
     restart: unless-stopped
-    nertwork_mode: host
     ports:
-        - "8080:80"
+        - "8080:3000"
     volumes:
         - "grafana-data:/data"
 

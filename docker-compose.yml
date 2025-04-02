@@ -5,9 +5,7 @@ volumes:
   grafana-data:
   influxdb-data:
   influxdb-etc:
-
-services:
-
+  
 services:
 
   # ------------------------------------------------------------------------------------

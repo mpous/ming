@@ -81,6 +81,7 @@ services:
     image: bh.cr/balenalabs/dashboard
     container_name: grafana
     restart: unless-stopped
+    nertwork_mode: host
     ports:
         - "8080:80"
     volumes:
